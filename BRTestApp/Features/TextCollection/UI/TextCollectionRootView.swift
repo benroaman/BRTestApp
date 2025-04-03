@@ -39,9 +39,9 @@ struct TextCollectionRootView<S: TextCollectionState>: View {
     @ViewBuilder
     func getDestination(for route: TextCollectionRoute) -> some View {
         switch route {
-        case .creation(let state): CreateTextRecordView(creation: state, collection: self.state, dismissCallback: { router.path.removeLast() })
-        case .detail(let record): EmptyView()
-        case .edit(let record): EmptyView()
+        case .creation(let state): ModifyTextRecordView(creation: state, collection: self.state, router: router)
+        case .detail(let record): TextRecordDetailView(record: record, isFavorite: state.favorites.contains(record.id), favoriteCallback: { state.toggleFavorite(record) }, editCallback: { router.push(.edit(record)) })
+        case .edit(let record): ModifyTextRecordView(creation: TextModifyState(record: record, isFavorite: state.favorites.contains(record.id)), collection: self.state, router: router)
         }
     }
 }

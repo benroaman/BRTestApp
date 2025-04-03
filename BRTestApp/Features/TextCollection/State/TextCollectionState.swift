@@ -12,7 +12,8 @@ import OrderedCollections
 protocol TextCollectionState: Observable {
     var textCollection: OrderedSet<TextRecord> { get }
     var favorites: Set<String> { get }
-    func addText(_ text: String, asFavorite: Bool)
+    func createRecord(_ text: String, asFavorite: Bool)
+    func editRecord(_ record: TextRecord, with newText: String, asFavorite: Bool)
     func removeRecord(_ record: TextRecord)
     func toggleFavorite(_ record: TextRecord)
 }
@@ -31,11 +32,27 @@ final class TextCollectionStateActual: TextCollectionState {
     }
     
     // MARK: Public API
-    func addText(_ text: String, asFavorite: Bool) {
+    func createRecord(_ text: String, asFavorite: Bool) {
         let newRecord = TextRecord(text)
         textCollection.append(newRecord)
         TextSettings.TextRecords.set(Array(textCollection))
         if asFavorite { toggleFavorite(newRecord) }
+    }
+    
+    func editRecord(_ record: TextRecord, with newText: String, asFavorite: Bool) {
+        let edited = record.replacingText(with: newText)
+        textCollection.updateOrInsert(edited, at: textCollection.count)
+        TextSettings.TextRecords.set(Array(textCollection))
+        
+        guard asFavorite != favorites.contains(edited.id) else { return }
+        
+        if asFavorite {
+            favorites.insert(edited.id)
+            TextSettings.Favorites.insert(edited.id)
+        } else {
+            favorites.remove(edited.id)
+            TextSettings.Favorites.remove(edited.id)
+        }
     }
     
     func removeRecord(_ record: TextRecord) {
@@ -62,15 +79,30 @@ final class TextCollectionStateMockEmpty: TextCollectionState {
     private(set) var textCollection: OrderedSet<TextRecord> = []
     private(set) var favorites: Set<String> = []
 
-    func addText(_ text: String, asFavorite: Bool) {
+    func createRecord(_ text: String, asFavorite: Bool) {
         let newRecord = TextRecord(text)
         textCollection.append(newRecord)
         if asFavorite { toggleFavorite(newRecord) }
     }
+    
+    func editRecord(_ record: TextRecord, with newText: String, asFavorite: Bool) {
+        let edited = record.replacingText(with: newText)
+        textCollection.updateOrInsert(edited, at: textCollection.count)
+        
+        guard asFavorite != favorites.contains(edited.id) else { return }
+        
+        if asFavorite {
+            favorites.insert(edited.id)
+        } else {
+            favorites.remove(edited.id)
+        }
+    }
+    
     func removeRecord(_ record: TextRecord) {
         textCollection.remove(record)
         favorites.remove(record.id)
     }
+    
     func toggleFavorite(_ record: TextRecord) {
         if favorites.contains(record.id) {
             favorites.remove(record.id)
@@ -85,15 +117,30 @@ final class TextCollectionStateMockSingle: TextCollectionState {
     private(set) var textCollection: OrderedSet<TextRecord> = [TextRecord("Cheers!")]
     private(set) var favorites: Set<String> = []
 
-    func addText(_ text: String, asFavorite: Bool) {
+    func createRecord(_ text: String, asFavorite: Bool) {
         let newRecord = TextRecord(text)
         textCollection.append(newRecord)
         if asFavorite { toggleFavorite(newRecord) }
     }
+
+    func editRecord(_ record: TextRecord, with newText: String, asFavorite: Bool) {
+        let edited = record.replacingText(with: newText)
+        textCollection.updateOrInsert(edited, at: textCollection.count)
+        
+        guard asFavorite != favorites.contains(edited.id) else { return }
+        
+        if asFavorite {
+            favorites.insert(edited.id)
+        } else {
+            favorites.remove(edited.id)
+        }
+    }
+    
     func removeRecord(_ record: TextRecord) {
         textCollection.remove(record)
         favorites.remove(record.id)
     }
+
     func toggleFavorite(_ record: TextRecord) {
         if favorites.contains(record.id) {
             favorites.remove(record.id)
@@ -108,16 +155,31 @@ final class TextCollectionStateMockMany: TextCollectionState {
     private(set) var textCollection: OrderedSet<TextRecord> = [TextRecord("Parks & Rec"), TextRecord("Community"), TextRecord("Happy Endings"), TextRecord("Schitt's Creek")]
     private(set) var favorites: Set<String> = []
 
-    func addText(_ text: String, asFavorite: Bool) {
+    func createRecord(_ text: String, asFavorite: Bool) {
         let newRecord = TextRecord(text)
         textCollection.append(newRecord)
         TextSettings.TextRecords.set(Array(textCollection))
         if asFavorite { toggleFavorite(newRecord) }
     }
+    
+    func editRecord(_ record: TextRecord, with newText: String, asFavorite: Bool) {
+        let edited = record.replacingText(with: newText)
+        textCollection.updateOrInsert(edited, at: textCollection.count)
+        
+        guard asFavorite != favorites.contains(edited.id) else { return }
+        
+        if asFavorite {
+            favorites.insert(edited.id)
+        } else {
+            favorites.remove(edited.id)
+        }
+    }
+    
     func removeRecord(_ record: TextRecord) {
         textCollection.remove(record)
         favorites.remove(record.id)
     }
+    
     func toggleFavorite(_ record: TextRecord) {
         if favorites.contains(record.id) {
             favorites.remove(record.id)

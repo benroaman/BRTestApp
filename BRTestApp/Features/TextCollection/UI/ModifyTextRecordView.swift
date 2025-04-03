@@ -1,5 +1,5 @@
 //
-//  CreateTextRecordView.swift
+//  ModifyTextRecordView.swift
 //  BRTestApp
 //
 //  Created by Ben Roaman on 4/3/25.
@@ -7,10 +7,10 @@
 
 import SwiftUI
 
-struct CreateTextRecordView<Collection: TextCollectionState>: View {
+struct ModifyTextRecordView<Collection: TextCollectionState>: View {
     @State var creation: TextModifyState
     let collection: Collection
-    let dismissCallback: () -> Void
+    let router: Router<TextCollectionRoute>
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -23,7 +23,6 @@ struct CreateTextRecordView<Collection: TextCollectionState>: View {
                 FavoriteButton(isActive: creation.isFavorite, callback: {
                     withAnimation(.bouncy(duration: 0.6, extraBounce: 0.2)) {
                         creation.isFavorite.toggle()
-                        print(creation.isFavorite)
                     }
                 })
                 Spacer().frame(width: 12)
@@ -36,16 +35,21 @@ struct CreateTextRecordView<Collection: TextCollectionState>: View {
             Spacer()
         }
         .padding()
-        .navigationTitle(Text("Create Text"))
+        .navigationTitle(Text(creation.intent.navTitle))
         .toolbar{
             Button("Save") {
-                collection.addText(creation.newText, asFavorite: creation.isFavorite)
-                dismissCallback()
+                switch creation.intent {
+                case .create:
+                    collection.createRecord(creation.newText, asFavorite: creation.isFavorite)
+                case .edit(let record):
+                    collection.editRecord(record, with: creation.newText, asFavorite: creation.isFavorite)
+                }
+                router.popOne()
             }
         }
     }
 }
 
 #Preview {
-    CreateTextRecordView(creation: TextModifyState(), collection: TextCollectionStateActual(), dismissCallback: { })
+    ModifyTextRecordView(creation: TextModifyState(), collection: TextCollectionStateActual(), router: Router(""))
 }

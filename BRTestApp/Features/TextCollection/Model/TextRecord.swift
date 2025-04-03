@@ -16,6 +16,15 @@ struct TextRecord: Codable, Identifiable {
         self.text = text
         self.id = UUID().uuidString
     }
+    
+    private init(_ text: String, id: String) {
+        self.text = text
+        self.id = id
+    }
+    
+    func replacingText(with newText: String) -> Self {
+        TextRecord(newText, id: id)
+    }
 }
 
 // MARK: Equatable Conformance
