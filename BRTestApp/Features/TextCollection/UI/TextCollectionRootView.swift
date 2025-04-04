@@ -14,17 +14,41 @@ struct TextCollectionRootView<S: TextCollectionState>: View {
     
     var body: some View {
         NavigationStack(path: $router.path) {
-            List(state.textCollection) { record in
-                Button(action: {
-                    router.push(.detail(record))
-                }, label: {
-                    TextCollectionRowView(record: record, isFavorite: state.favorites.contains(record.id), deleteCallback: {
-                        state.removeRecord(record)
-                    }, favoriteCallback: {
-                        state.toggleFavorite(record)
-                    })
-                })
+//            List(state.textCollection) { record in
+//                Button(action: {
+//                    router.push(.detail(record))
+//                }, label: {
+//                    TextCollectionRowView(record: record, isFavorite: state.favorites.contains(record.id), deleteCallback: {
+//                        state.removeRecord(record)
+//                    }, favoriteCallback: {
+//                        state.toggleFavorite(record)
+//                    })
+//                })
+//            }
+            List {
+                Section(header: Text("Text")) {
+                    ForEach(state.textCollection) { record in
+                        Button(action: {
+                            router.push(.detail(record))
+                        }, label: {
+                            TextCollectionRowView(record: record, isFavorite: state.favorites.contains(record.id), deleteCallback: {
+                                state.removeRecord(record)
+                            }, favoriteCallback: {
+                                state.toggleFavorite(record)
+                            })
+                        }).contextMenu {
+                            Button(action: {
+                                print("Action")
+                            }, label: {
+                                Label("Do A Thing", systemImage: "snowflake")
+                            })
+                        }
+                    }
+                }
+                
+                ProgressView().frame(maxWidth: .infinity).tint(Color.pink)
             }
+            .listStyle(.insetGrouped)
             .navigationTitle("Text Collection")
             .toolbar {
                 Button(action: {

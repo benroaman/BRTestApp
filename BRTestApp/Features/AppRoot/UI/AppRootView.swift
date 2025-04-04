@@ -8,16 +8,16 @@
 import SwiftUI
 
 struct AppRootView<S: AppState>: View {
-    let state: S
-    @State private(set) var selectedTab: Tabs = .text
-    
-    enum Tabs { case text }
+    @State var state: S
     
     var body: some View {
-        TabView(selection: $selectedTab) {
+        TabView(selection: $state.selectedTab) {
             TextCollectionRootView(state: state.textCollectionState)
                 .tabItem { Label("Text", systemImage: "character.cursor.ibeam") }
-                .tag(Tabs.text)
+                .tag(AppTabs.text)
+            Text("Numbers")
+                .tabItem { Label("Numbers", systemImage: "number") }
+                .tag(AppTabs.number)
         }
     }
 }

@@ -24,7 +24,7 @@ extension TextSettings {
     struct TextRecords: BRSetting {
         private init() { }
         typealias Value = [TextRecord]
-        static var key: String = "com.beebooapps.SUITest.app.TextSettings.TextRecords"
+        static var key: String = "com.beebooapps.BRTestApp.app.TextSettings.TextRecords"
         static var initial: Value = []
         static var pub: CurrentValueSubject<[TextRecord], Never> = .init(current)
     }
@@ -32,7 +32,7 @@ extension TextSettings {
     struct Favorites: BRSetting {
         private init() { }
         typealias Value = Set<String>
-        static var key: String = "com.beebooapps.SUITest.app.TextSettings.Favorites"
+        static var key: String = "com.beebooapps.BRTestApp.app.TextSettings.Favorites"
         static var initial: Value = []
         static var pub: CurrentValueSubject<Value, Never> = .init(current)
     }
