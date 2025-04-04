@@ -15,7 +15,7 @@ struct AppRootView<S: AppState>: View {
     
     var body: some View {
         TabView(selection: $selectedTab) {
-            TextCollectionRootView(state: state.textCollectionState)
+            TextCollectionRootView<TextCollectionFlowModelActual>(state: state.textCollectionState)
                 .tabItem { Label("Text", systemImage: "character.cursor.ibeam") }
                 .tag(Tabs.text)
         }

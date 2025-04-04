@@ -6,62 +6,71 @@
 //
 
 import SwiftUI
+import OrderedCollections
 
-struct TextCollectionRootView<S: TextCollectionState>: View {
-    let state: S
-    @State private var router = Router<TextCollectionRoute>("com.app.TextCollectionRouterState")
-    @State private var isPresentingCreate = false
+struct TextCollectionRootView<M: TextCollectionFlowModel>: View {
+    @State private var model: M
+
+    init(state: M.Collection) {
+        self.model = M(collectionState: state)
+    }
     
     var body: some View {
-        NavigationStack(path: $router.path) {
-            List(state.textCollection) { record in
-                Button(action: {
-                    router.push(.detail(record))
-                }, label: {
-                    TextCollectionRowView(record: record, isFavorite: state.favorites.contains(record.id), deleteCallback: {
-                        state.removeRecord(record)
-                    }, favoriteCallback: {
-                        state.toggleFavorite(record)
-                    })
-                })
-            }
-            .navigationTitle("Text Collection")
-            .toolbar {
-                Button(action: {
-//                    isPresentingCreate = true
-                    router.push(.creation(TextModifyState()))
-                }, label: {
-                    Image(systemName: "plus").font(.headline)
-                })
-            }
+        NavigationStack(path: $model.router.path) {
+            TextCollectionListScreen(model: model)
             .navigationDestination(for: TextCollectionRoute.self) { getDestination(for: $0) }
-        }.sheet(isPresented: $isPresentingCreate, content:  {
-            ModifyTextRecordView(creation: TextModifyState(), collection: self.state, router: router).presentationDetents([.medium])
-        })
+        }
     }
     
     @ViewBuilder
     func getDestination(for route: TextCollectionRoute) -> some View {
         switch route {
-        case .creation(let state): ModifyTextRecordView(creation: state, collection: self.state, router: router)
-        case .detail(let record): TextRecordDetailView(record: record, isFavorite: state.favorites.contains(record.id), favoriteCallback: { state.toggleFavorite(record) }, editCallback: { router.push(.edit(record)) })
-        case .edit(let record): ModifyTextRecordView(creation: TextModifyState(record: record, isFavorite: state.favorites.contains(record.id)), collection: self.state, router: router)
+        case .creation(let state): ModifyTextRecordView(creation: state, collection: model.collectionState, router: model.router)
+        case .detail(let record): TextRecordDetailView(record: record, isFavorite: model.collectionState.favorites.contains(record.id), favoriteCallback: { model.collectionState.toggleFavorite(record) }, editCallback: { model.router.push(.edit(record)) })
+        case .edit(let record): ModifyTextRecordView(creation: TextModifyState(record: record, isFavorite: model.collectionState.favorites.contains(record.id)), collection: model.collectionState, router: model.router)
         }
     }
 }
 
+protocol TextCollectionFlowModel: TextCollectionListScreenModel {
+    associatedtype Collection: TextCollectionState
+    var collectionState: Collection { get }
+    var router: Router<TextCollectionRoute> { get set }
+    init(collectionState: Collection)
+}
+
+struct TextCollectionFlowModelActual<Collection: TextCollectionState>: TextCollectionFlowModel {
+    init(collectionState: Collection) {
+        self.collectionState = collectionState
+    }
+    
+    let collectionState: Collection
+    var router = Router<TextCollectionRoute>("com.app.textCollectionFlowNavPath")
+    
+    var collection: OrderedSet<TextRecord> { collectionState.textCollection }
+    
+    func isFavorite(_ record: TextRecord) -> Bool {
+        collectionState.favorites.contains(record.id)
+    }
+    
+    func onTextCollectionListRowTapped(for record: TextRecord) {
+        router.push(.detail(record))
+    }
+    
+    func onTextCollectionListCreateTapped() {
+        router.push(.creation(TextModifyState()))
+    }
+    
+    func onTextCollectionRowDelete(_ record: TextRecord) {
+        collectionState.removeRecord(record)
+        router.popOne()
+    }
+    
+    func onTextCollectionRowFavorite(_ record: TextRecord) {
+        collectionState.toggleFavorite(record)
+    }
+}
+
 #Preview("Actual") {
-    TextCollectionRootView(state: TextCollectionStateActual())
-}
-
-#Preview("Empty") {
-    TextCollectionRootView(state: TextCollectionStateMockEmpty())
-}
-
-#Preview("Single") {
-    TextCollectionRootView(state: TextCollectionStateMockSingle())
-}
-
-#Preview("Many") {
-    TextCollectionRootView(state: TextCollectionStateMockMany())
+    TextCollectionRootView<TextCollectionFlowModelActual>(state: TextCollectionStateActual())
 }

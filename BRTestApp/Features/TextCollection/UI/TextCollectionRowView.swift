@@ -7,13 +7,12 @@
 
 import SwiftUI
 
-struct TextCollectionRowView: View {
+struct TextCollectionRowView<M: TextCollectionRowViewModel>: View {
     let record: TextRecord
-    let isFavorite: Bool
-    let deleteCallback: () -> Void
-    let favoriteCallback: () -> Void
+    let model: M
     @State private(set) var isDeleting: Bool = false
     @State private(set) var isShowingAlert: Bool = false
+    private var isFavorite: Bool { model.isFavorite(record) }
     
     var body: some View {
         HStack(alignment: .center) {
@@ -34,11 +33,13 @@ struct TextCollectionRowView: View {
             .animation(.linear(duration: 0.3), value: isDeleting)
             .buttonStyle(.borderless)
             Spacer().frame(width: 8)
-            FavoriteButton(isActive: isFavorite, callback: favoriteCallback)
+            FavoriteButton(isActive: isFavorite, callback: {
+                model.onTextCollectionRowFavorite(record)
+            })
         }
         .alert("Delete?", isPresented: $isShowingAlert, actions: {
             Button(role: .destructive, action: {
-                withAnimation(.easeOut(duration: 0.3)) { deleteCallback() }
+                withAnimation(.easeOut(duration: 0.3)) { model.onTextCollectionRowDelete(record) }
             }, label: {
                 Text("Delete")
             })
@@ -55,10 +56,29 @@ struct TextCollectionRowView: View {
     }
 }
 
+protocol TextCollectionRowViewModel {
+    func isFavorite(_ record: TextRecord) -> Bool
+    func onTextCollectionRowDelete(_ record: TextRecord)
+    func onTextCollectionRowFavorite(_ record: TextRecord)
+    
+}
+
 #Preview {
-    TextCollectionRowView(record: TextRecord("Testy McTestFace"), isFavorite: true, deleteCallback: { }, favoriteCallback: { })
+    struct TestModel: TextCollectionRowViewModel {
+        func isFavorite(_ record: TextRecord) -> Bool { true }
+        func onTextCollectionRowDelete(_ record: TextRecord) { }
+        func onTextCollectionRowFavorite(_ record: TextRecord) { }
+    }
+    
+    return TextCollectionRowView(record: TextRecord("Testy McTestFace"), model: TestModel())
 }
 
 #Preview("Long") {
-    TextCollectionRowView(record: TextRecord("Testy McTestFace Testy McTestFace Testy McTestFace Testy McTestFace Testy McTestFace Testy McTestFace"), isFavorite: true, deleteCallback: { }, favoriteCallback: { })
+    struct TestModel: TextCollectionRowViewModel {
+        func isFavorite(_ record: TextRecord) -> Bool { true }
+        func onTextCollectionRowDelete(_ record: TextRecord) { }
+        func onTextCollectionRowFavorite(_ record: TextRecord) { }
+    }
+    
+    return TextCollectionRowView(record: TextRecord("Testy McTestFace Testy McTestFace Testy McTestFace Testy McTestFace Testy McTestFace Testy McTestFace"), model: TestModel())
 }
