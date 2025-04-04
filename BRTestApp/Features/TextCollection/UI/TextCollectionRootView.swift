@@ -10,6 +10,7 @@ import SwiftUI
 struct TextCollectionRootView<S: TextCollectionState>: View {
     let state: S
     @State private var router = Router<TextCollectionRoute>("com.app.TextCollectionRouterState")
+    @State private var isPresentingCreate = false
     
     var body: some View {
         NavigationStack(path: $router.path) {
@@ -27,13 +28,16 @@ struct TextCollectionRootView<S: TextCollectionState>: View {
             .navigationTitle("Text Collection")
             .toolbar {
                 Button(action: {
+//                    isPresentingCreate = true
                     router.push(.creation(TextModifyState()))
                 }, label: {
                     Image(systemName: "plus").font(.headline)
                 })
             }
             .navigationDestination(for: TextCollectionRoute.self) { getDestination(for: $0) }
-        }
+        }.sheet(isPresented: $isPresentingCreate, content:  {
+            ModifyTextRecordView(creation: TextModifyState(), collection: self.state, router: router).presentationDetents([.medium])
+        })
     }
     
     @ViewBuilder

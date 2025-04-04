@@ -8,7 +8,7 @@
 import Foundation
 
 // MARK: Base
-struct TextRecord: Codable, Identifiable {
+final class TextRecord: Codable, Identifiable {
     var text: String
     let id: String
     
@@ -22,7 +22,7 @@ struct TextRecord: Codable, Identifiable {
         self.id = id
     }
     
-    func replacingText(with newText: String) -> Self {
+    func replacingText(with newText: String) -> TextRecord {
         TextRecord(newText, id: id)
     }
 }
