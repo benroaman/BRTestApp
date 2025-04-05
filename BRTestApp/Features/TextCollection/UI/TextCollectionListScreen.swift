@@ -6,10 +6,10 @@
 //
 
 import SwiftUI
-import OrderedCollections
 
 struct TextCollectionListScreen<M: TextCollectionListScreenModel>: View {
     let model: M
+    @State private var isEditing = false
     
     var body: some View {
         List {
@@ -23,6 +23,7 @@ struct TextCollectionListScreen<M: TextCollectionListScreenModel>: View {
         }
         .navigationTitle("Text Collection")
         .toolbar {
+            EditButton()
             Button(action: model.onTextCollectionListCreateTapped, label: {
                 Image(systemName: "plus").font(.headline)
             })
@@ -42,7 +43,7 @@ protocol TextCollectionListScreenModel: TextCollectionRowViewModel {
         func isFavorite(_ record: TextRecord) -> Bool { true }
         func onTextCollectionRowDelete(_ record: TextRecord) { }
         func onTextCollectionRowFavorite(_ record: TextRecord) { }
-        let collection: [TextRecord] = []
+        let collection: [TextRecord] = [TextRecord("Righteous Gemstones")]
         func onTextCollectionListRowTapped(for record: TextRecord) { }
         func onTextCollectionListCreateTapped() { }
         func onTextCollectionListRowMoved(from source: IndexSet, to destination: Int) { }

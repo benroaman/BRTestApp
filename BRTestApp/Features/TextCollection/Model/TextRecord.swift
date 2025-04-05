@@ -19,6 +19,22 @@ final class TextRecord: Codable, Identifiable {
         self.isFavorite = isFavorite
         self.id = UUID().uuidString
     }
+    
+    init(_ cdRecord: CDTextRecord) {
+        var text: String?
+        var isFavorite: Bool?
+        var id: String?
+        
+        cdRecord.managedObjectContext?.performAndWait {
+            text = cdRecord.text
+            isFavorite = cdRecord.isFavorite
+            id = cdRecord.id?.uuidString
+        }
+        
+        self.text = text ?? ""
+        self.isFavorite = isFavorite ?? false
+        self.id = id ?? UUID().uuidString
+    }
 }
 
 // MARK: Equatable Conformance
