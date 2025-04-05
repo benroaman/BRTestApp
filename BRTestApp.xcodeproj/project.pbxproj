@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		D33565E12D9F132400422D5C /* BRSettings in Frameworks */ = {isa = PBXBuildFile; productRef = D33565E02D9F132400422D5C /* BRSettings */; };
-		D33565E42D9F133300422D5C /* OrderedCollections in Frameworks */ = {isa = PBXBuildFile; productRef = D33565E32D9F133300422D5C /* OrderedCollections */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,7 +56,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D33565E42D9F133300422D5C /* OrderedCollections in Frameworks */,
 				D33565E12D9F132400422D5C /* BRSettings in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -120,7 +118,6 @@
 			name = BRTestApp;
 			packageProductDependencies = (
 				D33565E02D9F132400422D5C /* BRSettings */,
-				D33565E32D9F133300422D5C /* OrderedCollections */,
 			);
 			productName = BRTestApp;
 			productReference = D335658D2D9F11D000422D5C /* BRTestApp.app */;
@@ -206,7 +203,6 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				D33565DF2D9F132400422D5C /* XCRemoteSwiftPackageReference "BRSettings" */,
-				D33565E22D9F133300422D5C /* XCRemoteSwiftPackageReference "swift-collections" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = D335658E2D9F11D000422D5C /* Products */;
@@ -581,14 +577,6 @@
 				kind = branch;
 			};
 		};
-		D33565E22D9F133300422D5C /* XCRemoteSwiftPackageReference "swift-collections" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/apple/swift-collections.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.1.4;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -596,11 +584,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = D33565DF2D9F132400422D5C /* XCRemoteSwiftPackageReference "BRSettings" */;
 			productName = BRSettings;
-		};
-		D33565E32D9F133300422D5C /* OrderedCollections */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = D33565E22D9F133300422D5C /* XCRemoteSwiftPackageReference "swift-collections" */;
-			productName = OrderedCollections;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

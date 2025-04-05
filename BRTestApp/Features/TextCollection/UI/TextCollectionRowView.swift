@@ -12,7 +12,6 @@ struct TextCollectionRowView<M: TextCollectionRowViewModel>: View {
     let model: M
     @State private(set) var isDeleting: Bool = false
     @State private(set) var isShowingAlert: Bool = false
-    private var isFavorite: Bool { model.isFavorite(record) }
     
     var body: some View {
         HStack(alignment: .center) {
@@ -33,7 +32,7 @@ struct TextCollectionRowView<M: TextCollectionRowViewModel>: View {
             .animation(.linear(duration: 0.3), value: isDeleting)
             .buttonStyle(.borderless)
             Spacer().frame(width: 8)
-            FavoriteButton(isActive: isFavorite, callback: {
+            FavoriteButton(isActive: record.isFavorite, callback: {
                 model.onTextCollectionRowFavorite(record)
             })
         }
@@ -51,16 +50,21 @@ struct TextCollectionRowView<M: TextCollectionRowViewModel>: View {
                 Text("Cancel")
             })
         }, message: {
-            Text("Are you sure you want to delete \"\(record.text)\"\(isFavorite ? " - it's one of your favorites!" : "?")")
+            Text("Are you sure you want to delete \"\(record.text)\"\(record.isFavorite ? " - it's one of your favorites!" : "?")")
         })
+        .contextMenu {
+            Button(action: {
+                print("CONTEXT!")
+            }, label: {
+                Label("Some Action", systemImage: "heart.fill")
+            })
+        }
     }
 }
 
 protocol TextCollectionRowViewModel {
-    func isFavorite(_ record: TextRecord) -> Bool
     func onTextCollectionRowDelete(_ record: TextRecord)
     func onTextCollectionRowFavorite(_ record: TextRecord)
-    
 }
 
 #Preview {

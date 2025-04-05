@@ -7,15 +7,15 @@
 
 import SwiftUI
 
-struct AppRootView<S: AppState>: View {
-    let state: S
+struct AppRootView<TC: TextCollectionState>: View {
+    let state: AppState<TC>
     @State private(set) var selectedTab: Tabs = .text
     
     enum Tabs { case text }
     
     var body: some View {
         TabView(selection: $selectedTab) {
-            TextCollectionRootView<TextCollectionFlowModelActual>(state: state.textCollectionState)
+            TextCollectionFlow<TextCollectionFlowModelActual>(state: state.textCollectionState)
                 .tabItem { Label("Text", systemImage: "character.cursor.ibeam") }
                 .tag(Tabs.text)
         }
@@ -23,5 +23,5 @@ struct AppRootView<S: AppState>: View {
 }
 
 #Preview("Many") {
-    AppRootView(state: AppStateMockMany())
+    AppRootView(state: AppState(textCollectionState: TextCollectionStateMockMany()))
 }

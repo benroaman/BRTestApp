@@ -8,22 +8,16 @@
 import Foundation
 
 // MARK: Base
+@Observable
 final class TextRecord: Codable, Identifiable {
     var text: String
+    var isFavorite: Bool
     let id: String
     
-    init(_ text: String) {
+    init(_ text: String, isFavorite: Bool = false) {
         self.text = text
+        self.isFavorite = isFavorite
         self.id = UUID().uuidString
-    }
-    
-    private init(_ text: String, id: String) {
-        self.text = text
-        self.id = id
-    }
-    
-    func replacingText(with newText: String) -> TextRecord {
-        TextRecord(newText, id: id)
     }
 }
 

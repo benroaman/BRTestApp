@@ -9,7 +9,6 @@ import SwiftUI
 
 struct TextRecordDetailView: View {
     let record: TextRecord
-    let isFavorite: Bool
     let favoriteCallback: () -> Void
     let editCallback: () -> Void
     
@@ -20,7 +19,7 @@ struct TextRecordDetailView: View {
         }
         .navigationTitle("Detail")
         .toolbar {
-            FavoriteButton(isActive: isFavorite, callback: favoriteCallback)
+            FavoriteButton(isActive: record.isFavorite, callback: favoriteCallback)
             Spacer().frame(width: 12)
             Button(action: {
                 editCallback()
@@ -32,5 +31,5 @@ struct TextRecordDetailView: View {
 }
 
 #Preview {
-    TextRecordDetailView(record: TextRecord("Test"), isFavorite: false, favoriteCallback: { }, editCallback: { })
+    TextRecordDetailView(record: TextRecord("Test"), favoriteCallback: { }, editCallback: { })
 }

@@ -9,7 +9,7 @@ import SwiftUI
 
 @main
 struct SUITestApp: App {
-    let state = AppStateActual()
+    let state = AppState(textCollectionState: TextCollectionStateUserDefaultsBacked())
     
     var body: some Scene {
         WindowGroup {

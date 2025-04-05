@@ -15,30 +15,36 @@ import UIKit
 @Observable
 final class Router<R: Hashable & Codable> {
     // MARK: Private Constants
-    private let peristenceKey: String
+    private let peristenceKey: String?
     
     // MARK: Public Variables
     var path: [R]
     
     // MARK: Initializers
-    init(_ peristenceKey: String) {
-        if let savedPathData = UserDefaults.standard.data(forKey: peristenceKey), let savedPath = try? JSONDecoder().decode([R].self, from: savedPathData) {
-            self.path = savedPath
+    init(_ peristenceKey: String? = nil) {
+        self.peristenceKey = peristenceKey
+        
+        if let key = peristenceKey, !key.isEmpty {
+            if let savedPathData = UserDefaults.standard.data(forKey: key), let savedPath = try? JSONDecoder().decode([R].self, from: savedPathData) {
+                self.path = savedPath
+            } else {
+                self.path = []
+            }
+            NotificationCenter.default.addObserver(self, selector: #selector(savePath), name: UIApplication.willTerminateNotification, object: nil)
+            NotificationCenter.default.addObserver(self, selector: #selector(savePath), name: UIApplication.didEnterBackgroundNotification, object: nil)
         } else {
             self.path = []
         }
-        self.peristenceKey = peristenceKey
         
-        NotificationCenter.default.addObserver(self, selector: #selector(savePath), name: UIApplication.willTerminateNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(savePath), name: UIApplication.didEnterBackgroundNotification, object: nil)
     }
     
     // MARK: Private API
     @objc private func savePath() {
+        guard let key = peristenceKey, !key.isEmpty else { return }
         if let data = try? JSONEncoder().encode(path) {
-            UserDefaults.standard.set(data, forKey: peristenceKey)
+            UserDefaults.standard.set(data, forKey: key)
         } else {
-            UserDefaults.standard.set(Data(), forKey: peristenceKey)
+            UserDefaults.standard.set(Data(), forKey: key)
         }
     }
 }

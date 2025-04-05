@@ -8,25 +8,25 @@
 import SwiftUI
 
 struct ModifyTextRecordView<Collection: TextCollectionState>: View {
-    @State var creation: TextModifyState
+    @StateObject var modification: TextModifyState
     let collection: Collection
     let router: Router<TextCollectionRoute>
     
     var body: some View {
         VStack(alignment: .leading) {
             Text("Create some new text")
-            TextField("Text", text: $creation.newText).textFieldStyle(.roundedBorder)
+            TextField("Text", text: $modification.newText).textFieldStyle(.roundedBorder)
             Spacer().frame(height: 20)
             Text("Should it be a favorite?")
             Spacer().frame(height: 8)
             HStack(alignment: .center) {
-                FavoriteButton(isActive: creation.isFavorite, callback: {
+                FavoriteButton(isActive: modification.isFavorite, callback: {
                     withAnimation(.bouncy(duration: 0.6, extraBounce: 0.2)) {
-                        creation.isFavorite.toggle()
+                        modification.isFavorite.toggle()
                     }
                 })
                 Spacer().frame(width: 12)
-                if creation.isFavorite {
+                if modification.isFavorite {
                     Text("Favorite!")
                         .font(.subheadline)
                         .transition(.scale.combined(with: .blurReplace))
@@ -35,14 +35,14 @@ struct ModifyTextRecordView<Collection: TextCollectionState>: View {
             Spacer()
         }
         .padding()
-        .navigationTitle(Text(creation.intent.navTitle))
+        .navigationTitle(Text(modification.intent.navTitle))
         .toolbar{
             Button("Save") {
-                switch creation.intent {
+                switch modification.intent {
                 case .create:
-                    collection.createRecord(creation.newText, asFavorite: creation.isFavorite)
+                    collection.createRecord(modification)
                 case .edit(let record):
-                    collection.editRecord(record, with: creation.newText, asFavorite: creation.isFavorite)
+                    collection.modifyRecord(modification)
                 }
                 router.popOne()
             }
@@ -51,5 +51,5 @@ struct ModifyTextRecordView<Collection: TextCollectionState>: View {
 }
 
 #Preview {
-    ModifyTextRecordView(creation: TextModifyState(), collection: TextCollectionStateActual(), router: Router(""))
+    ModifyTextRecordView(modification: TextModifyState(), collection: TextCollectionStateUserDefaultsBacked(), router: Router(""))
 }

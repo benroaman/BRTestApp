@@ -12,12 +12,14 @@ struct TextCollectionListScreen<M: TextCollectionListScreenModel>: View {
     let model: M
     
     var body: some View {
-        List(model.collection) { record in
-            Button(action: {
-                model.onTextCollectionListRowTapped(for: record)
-            }, label: {
-                TextCollectionRowView(record: record, model: model)
-            })
+        List {
+            ForEach(model.collection) { record in
+                Button(action: {
+                    model.onTextCollectionListRowTapped(for: record)
+                }, label: {
+                    TextCollectionRowView(record: record, model: model)
+                })
+            }.onMove(perform: model.onTextCollectionListRowMoved)
         }
         .navigationTitle("Text Collection")
         .toolbar {
@@ -29,10 +31,10 @@ struct TextCollectionListScreen<M: TextCollectionListScreenModel>: View {
 }
 
 protocol TextCollectionListScreenModel: TextCollectionRowViewModel {
-    var collection: OrderedSet<TextRecord> { get }
-    func isFavorite(_ record: TextRecord) -> Bool
+    var collection: [TextRecord] { get }
     func onTextCollectionListRowTapped(for record: TextRecord)
     func onTextCollectionListCreateTapped()
+    func onTextCollectionListRowMoved(from source: IndexSet, to destination: Int)
 }
 
 #Preview {
@@ -40,9 +42,10 @@ protocol TextCollectionListScreenModel: TextCollectionRowViewModel {
         func isFavorite(_ record: TextRecord) -> Bool { true }
         func onTextCollectionRowDelete(_ record: TextRecord) { }
         func onTextCollectionRowFavorite(_ record: TextRecord) { }
-        let collection: OrderedSet<TextRecord> = []
+        let collection: [TextRecord] = []
         func onTextCollectionListRowTapped(for record: TextRecord) { }
         func onTextCollectionListCreateTapped() { }
+        func onTextCollectionListRowMoved(from source: IndexSet, to destination: Int) { }
     }
     
     return TextCollectionListScreen(model: TestModel())

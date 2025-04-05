@@ -8,11 +8,10 @@
 import Foundation
 
 // MARK: Base
-@Observable
-final class TextModifyState: Codable, Hashable {
+final class TextModifyState: Codable, Hashable, ObservableObject {
     // MARK: Instance Members
-    var newText: String
-    var isFavorite: Bool
+    @Published var newText: String
+    @Published var isFavorite: Bool
     let id: String
     let intent: Intent
     
@@ -24,16 +23,46 @@ final class TextModifyState: Codable, Hashable {
         self.intent = .create
     }
     
-    init(record: TextRecord, isFavorite: Bool) {
+    init(record: TextRecord) {
         self.newText = record.text
-        self.isFavorite = isFavorite
+        self.isFavorite = record.isFavorite
         self.id = UUID().uuidString
         self.intent = .edit(record)
+    }
+    
+    func applyEdit() {
+        switch intent {
+        case .create: return
+        case .edit(let record):
+            record.text = newText
+            record.isFavorite = isFavorite
+        }
     }
         
     // MARK: Hashable Conformance
     func hash(into hasher: inout Hasher) { hasher.combine(id) }
     static func == (lhs: TextModifyState, rhs: TextModifyState) -> Bool { lhs.id == rhs.id }
+    
+    // MARK: Codable Conformance
+    private enum CodingKeys: String, CodingKey {
+        case newText, isFavorite, id, intent
+    }
+    
+    init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.newText = try container.decode(String.self, forKey: .newText)
+        self.isFavorite = try container.decode(Bool.self, forKey: .isFavorite)
+        self.id = try container.decode(String.self, forKey: .id)
+        self.intent = try container.decode(Intent.self, forKey: .intent)
+    }
+    
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(newText, forKey: .newText)
+        try container.encode(isFavorite, forKey: .isFavorite)
+        try container.encode(id, forKey: .id)
+        try container.encode(intent, forKey: .intent)
+    }
 }
 
 extension TextModifyState {
