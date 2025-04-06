@@ -15,7 +15,7 @@ struct ModifyTextRecordView<Collection: TextCollectionState>: View {
     var body: some View {
         VStack(alignment: .leading) {
             Text("Create some new text")
-            TextField("Text", text: $modification.newText).textFieldStyle(.roundedBorder)
+            TextField("Text", text: $modification.newText).textFieldStyle(.roundedBorder).colorInvert().shadow(color: .green, radius: 4)
             Spacer().frame(height: 20)
             Text("Should it be a favorite?")
             Spacer().frame(height: 8)
@@ -41,7 +41,7 @@ struct ModifyTextRecordView<Collection: TextCollectionState>: View {
                 switch modification.intent {
                 case .create:
                     collection.createRecord(modification)
-                case .edit(let record):
+                case .edit(_):
                     collection.modifyRecord(modification)
                 }
                 router.popOne()

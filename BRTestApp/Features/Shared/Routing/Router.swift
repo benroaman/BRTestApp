@@ -52,7 +52,10 @@ final class Router<R: Hashable & Codable> {
 // MARK: Public API
 extension Router {
     func push(_ route: R) { path.append(route) }
-    func popOne() {  path.removeLast() }
+    func popOne() {
+        guard !path.isEmpty else { return }
+        path.removeLast()
+    }
     func popToRoot() { path = [] }
     
     func removeLast(of route: R) {

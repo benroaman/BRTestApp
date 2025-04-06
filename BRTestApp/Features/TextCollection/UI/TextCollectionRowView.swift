@@ -58,6 +58,32 @@ struct TextCollectionRowView<M: TextCollectionRowViewModel>: View {
             }, label: {
                 Label("Some Action", systemImage: "heart.fill")
             })
+        } preview: {
+            // https://medium.com/@aisultanios/mastering-swiftuis-contextmenu-tips-and-tricks-for-next-level-ios-development-custom-preview-and-546e72dec1ce
+            HStack(alignment: .center) {
+                Text(record.text)
+                    .font(.headline)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.8)
+                    .foregroundStyle(isDeleting ? Color.red : Color.primary)
+                    .animation(.linear(duration: 0.3), value: isDeleting)
+                Spacer()
+//                Button(action: {
+//                    isDeleting = true
+//                    isShowingAlert = true
+//                }, label: {
+//                    Image(systemName: isDeleting ? "trash.fill" : "trash")
+//                        .foregroundStyle(Color.red)
+//                })
+//                .animation(.linear(duration: 0.3), value: isDeleting)
+//                .buttonStyle(.borderless)
+//                Spacer().frame(width: 8)
+//                FavoriteButton(isActive: record.isFavorite, callback: {
+//                    model.onTextCollectionRowFavorite(record)
+//                })
+            }
+            .padding()
+            .frame(maxWidth: .infinity)
         }
     }
 }
